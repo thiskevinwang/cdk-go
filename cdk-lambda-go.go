@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/aws/aws-cdk-go/awscdk"
+	"github.com/aws/aws-cdk-go/awscdk/awslambda"
+	"github.com/aws/aws-cdk-go/awscdk/awss3assets"
 	"github.com/aws/aws-cdk-go/awscdk/awssns"
 	"github.com/aws/constructs-go/constructs/v3"
 	"github.com/aws/jsii-runtime-go"
@@ -25,13 +27,26 @@ func NewCdkLambdaGoStack(scope constructs.Construct, id string, props *CdkLambda
 		DisplayName: jsii.String("MyCoolTopic"),
 	})
 
+	// RUN
+	// `GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ./lambda/main ./lambda/main.go`
+	// https://stackoverflow.com/questions/58133166/getting-error-fork-exec-var-task-main-no-such-file-or-directory-while-execut
+	awslambda.NewFunction(stack, jsii.String("MyGoFunction"), &awslambda.FunctionProps{
+		Description: jsii.String("A lambda function, written in Go"),
+		Runtime:     awslambda.Runtime_GO_1_X(),
+		// In the `lambda` folder, there needs to be an *executable*, preferably named `main`
+		Code: awslambda.Code_FromAsset(jsii.String("lambda"), &awss3assets.AssetOptions{}),
+		// In the original `go` code from `lambda/main.go`, there needs to be a func defined:
+		// - `func main()`...
+		Handler: jsii.String("main"),
+	})
+
 	return stack
 }
 
 func main() {
 	app := awscdk.NewApp(nil)
 
-	NewCdkLambdaGoStack(app, "CdkLambdaGoStack", &CdkLambdaGoStackProps{
+	NewCdkLambdaGoStack(app, "MyGoStack", &CdkLambdaGoStackProps{
 		awscdk.StackProps{
 			Env: env(),
 		},
