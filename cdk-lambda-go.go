@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/aws/aws-cdk-go/awscdk"
+	"github.com/aws/aws-cdk-go/awscdk/awsdynamodb"
 	"github.com/aws/aws-cdk-go/awscdk/awslambda"
 	"github.com/aws/aws-cdk-go/awscdk/awss3assets"
 	"github.com/aws/aws-cdk-go/awscdk/awssns"
@@ -27,6 +28,20 @@ func NewCdkLambdaGoStack(scope constructs.Construct, id string, props *CdkLambda
 		DisplayName: jsii.String("MyCoolTopic"),
 	})
 
+	// Adding a basic Dynamo DB table
+	table := awsdynamodb.NewTable(stack, jsii.String("MyTable"), &awsdynamodb.TableProps{
+		TableName: jsii.String("GoCDKTable"),
+		PartitionKey: &awsdynamodb.Attribute{
+			Name: jsii.String("pk"),
+			Type: awsdynamodb.AttributeType_STRING,
+		},
+		SortKey: &awsdynamodb.Attribute{
+			Name: jsii.String("sk"),
+			Type: awsdynamodb.AttributeType_STRING,
+		},
+		BillingMode: awsdynamodb.BillingMode_PAY_PER_REQUEST,
+	})
+
 	// RUN
 	// `GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ./lambda/main ./lambda/main.go`
 	// https://stackoverflow.com/questions/58133166/getting-error-fork-exec-var-task-main-no-such-file-or-directory-while-execut
@@ -37,7 +52,8 @@ func NewCdkLambdaGoStack(scope constructs.Construct, id string, props *CdkLambda
 		Code: awslambda.Code_FromAsset(jsii.String("lambda"), &awss3assets.AssetOptions{}),
 		// In the original `go` code from `lambda/main.go`, there needs to be a func defined:
 		// - `func main()`...
-		Handler: jsii.String("main"),
+		Handler:     jsii.String("main"),
+		Environment: &map[string]*string{"tablename": jsii.String(*table.TableName()), "lettuce": jsii.String("7")},
 	})
 
 	return stack
@@ -46,7 +62,9 @@ func NewCdkLambdaGoStack(scope constructs.Construct, id string, props *CdkLambda
 func main() {
 	app := awscdk.NewApp(nil)
 
-	NewCdkLambdaGoStack(app, "MyGoStack", &CdkLambdaGoStackProps{
+	stackId := "GolangStack"
+
+	NewCdkLambdaGoStack(app, stackId, &CdkLambdaGoStackProps{
 		awscdk.StackProps{
 			Env: env(),
 		},

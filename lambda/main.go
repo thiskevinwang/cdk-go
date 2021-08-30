@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -12,6 +13,9 @@ type MyEvent struct {
 }
 
 func HandleRequest(ctx context.Context, event MyEvent) (string, error) {
+	// https://gobyexample.com/environment-variables
+	fmt.Println("tablename:", os.Getenv("tablename"))
+	fmt.Println("lettuce:", os.Getenv("lettuce"))
 	return fmt.Sprintf("Hello %s!", event.Name), nil
 }
 
