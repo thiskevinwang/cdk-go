@@ -1,5 +1,5 @@
 {
-  "app": "go mod download && go run cdk-lambda-go.go",
+  "app": "go mod download && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ./lambda/main ./lambda/main.go && go run cdk-lambda-go.go",
   "context": {
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": true,
     "@aws-cdk/core:enableStackNameDuplicates": "true",
