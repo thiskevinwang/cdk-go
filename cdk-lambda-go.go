@@ -61,7 +61,9 @@ func NewCdkLambdaGoStack(scope constructs.Construct, id string, props *CdkLambda
 func main() {
 	app := awscdk.NewApp(nil)
 
-	NewCdkLambdaGoStack(app, "MyGoStack", &CdkLambdaGoStackProps{
+	stackId := "GolangStack"
+
+	NewCdkLambdaGoStack(app, stackId, &CdkLambdaGoStackProps{
 		awscdk.StackProps{
 			Env: env(),
 		},
