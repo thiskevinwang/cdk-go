@@ -52,7 +52,8 @@ func NewCdkLambdaGoStack(scope constructs.Construct, id string, props *CdkLambda
 		Code: awslambda.Code_FromAsset(jsii.String("lambda"), &awss3assets.AssetOptions{}),
 		// In the original `go` code from `lambda/main.go`, there needs to be a func defined:
 		// - `func main()`...
-		Handler: jsii.String("main"),
+		Handler:     jsii.String("main"),
+		Environment: &map[string]*string{"tablename": jsii.String(*table.TableName()), "lettuce": jsii.String("7")},
 	})
 
 	return stack
