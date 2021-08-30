@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/aws/aws-cdk-go/awscdk"
+	"github.com/aws/aws-cdk-go/awscdk/awsdynamodb"
 	"github.com/aws/aws-cdk-go/awscdk/awslambda"
 	"github.com/aws/aws-cdk-go/awscdk/awss3assets"
 	"github.com/aws/aws-cdk-go/awscdk/awssns"
@@ -25,6 +26,20 @@ func NewCdkLambdaGoStack(scope constructs.Construct, id string, props *CdkLambda
 	// as an example, here's how you would define an AWS SNS topic:
 	awssns.NewTopic(stack, jsii.String("MyTopic"), &awssns.TopicProps{
 		DisplayName: jsii.String("MyCoolTopic"),
+	})
+
+	// Adding a basic Dynamo DB table
+	table := awsdynamodb.NewTable(stack, jsii.String("MyTable"), &awsdynamodb.TableProps{
+		TableName: jsii.String("GoCDKTable"),
+		PartitionKey: &awsdynamodb.Attribute{
+			Name: jsii.String("pk"),
+			Type: awsdynamodb.AttributeType_STRING,
+		},
+		SortKey: &awsdynamodb.Attribute{
+			Name: jsii.String("sk"),
+			Type: awsdynamodb.AttributeType_STRING,
+		},
+		BillingMode: awsdynamodb.BillingMode_PAY_PER_REQUEST,
 	})
 
 	// RUN
