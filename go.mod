@@ -3,13 +3,13 @@ module cdk-lambda-go
 go 1.17
 
 require (
-	github.com/aws/aws-cdk-go/awscdk v1.120.0-devpreview
-	github.com/aws/constructs-go/constructs/v3 v3.3.137
+	github.com/aws/aws-cdk-go/awscdk v1.121.0-devpreview
+	github.com/aws/constructs-go/constructs/v3 v3.3.141
 	github.com/aws/jsii-runtime-go v1.34.0
 	github.com/stretchr/testify v1.7.0
 
 	// for testing
-	github.com/tidwall/gjson v1.7.4
+	github.com/tidwall/gjson v1.9.0
 )
 
 require (
