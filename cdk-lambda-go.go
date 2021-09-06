@@ -42,12 +42,14 @@ func NewCdkLambdaGoStack(scope constructs.Construct, id string, props *CdkLambda
 		BillingMode: awsdynamodb.BillingMode_PAY_PER_REQUEST,
 	})
 
-	awslambdago.NewGoFunction(stack, jsii.String("MyGoFunction3"), &awslambdago.GoFunctionProps{
+	fn := awslambdago.NewGoFunction(stack, jsii.String("MyGoFunction3"), &awslambdago.GoFunctionProps{
 		Description: jsii.String("A lambda function, written in Go"),
 		Runtime:     awslambda.Runtime_GO_1_X(),
 		Entry:       jsii.String("lambda/main.go"),
 		Environment: &map[string]*string{"tablename": jsii.String(*table.TableName()), "lettuce": jsii.String("69")},
 	})
+
+	table.GrantReadWriteData(fn)
 
 	return stack
 }
