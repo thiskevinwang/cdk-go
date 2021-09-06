@@ -4,7 +4,7 @@ import (
 	"github.com/aws/aws-cdk-go/awscdk"
 	"github.com/aws/aws-cdk-go/awscdk/awsdynamodb"
 	"github.com/aws/aws-cdk-go/awscdk/awslambda"
-	"github.com/aws/aws-cdk-go/awscdk/awss3assets"
+	"github.com/aws/aws-cdk-go/awscdk/awslambdago"
 	"github.com/aws/aws-cdk-go/awscdk/awssns"
 	"github.com/aws/constructs-go/constructs/v3"
 	"github.com/aws/jsii-runtime-go"
@@ -42,18 +42,11 @@ func NewCdkLambdaGoStack(scope constructs.Construct, id string, props *CdkLambda
 		BillingMode: awsdynamodb.BillingMode_PAY_PER_REQUEST,
 	})
 
-	// RUN
-	// `GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ./lambda/main ./lambda/main.go`
-	// https://stackoverflow.com/questions/58133166/getting-error-fork-exec-var-task-main-no-such-file-or-directory-while-execut
-	awslambda.NewFunction(stack, jsii.String("MyGoFunction"), &awslambda.FunctionProps{
+	awslambdago.NewGoFunction(stack, jsii.String("MyGoFunction3"), &awslambdago.GoFunctionProps{
 		Description: jsii.String("A lambda function, written in Go"),
 		Runtime:     awslambda.Runtime_GO_1_X(),
-		// In the `lambda` folder, there needs to be an *executable*, preferably named `main`
-		Code: awslambda.Code_FromAsset(jsii.String("lambda"), &awss3assets.AssetOptions{}),
-		// In the original `go` code from `lambda/main.go`, there needs to be a func defined:
-		// - `func main()`...
-		Handler:     jsii.String("main"),
-		Environment: &map[string]*string{"tablename": jsii.String(*table.TableName()), "lettuce": jsii.String("7")},
+		Entry:       jsii.String("lambda/main.go"),
+		Environment: &map[string]*string{"tablename": jsii.String(*table.TableName()), "lettuce": jsii.String("69")},
 	})
 
 	return stack
