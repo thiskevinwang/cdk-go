@@ -29,8 +29,7 @@ func Stack(scope constructs.Construct, id string, props *StackProps) awscdk.Stac
 	})
 
 	// Adding a basic Dynamo DB table
-	table := awsdynamodb.NewTable(stack, jsii.String("MyTable"), &awsdynamodb.TableProps{
-		TableName: jsii.String("GoCDKTable"),
+	table := awsdynamodb.NewTable(stack, jsii.String("GoCDKTable"), &awsdynamodb.TableProps{
 		PartitionKey: &awsdynamodb.Attribute{
 			Name: jsii.String("pk"),
 			Type: awsdynamodb.AttributeType_STRING,
