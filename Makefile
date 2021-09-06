@@ -1,13 +1,6 @@
-GOOS=linux
-GOARCH=amd64
-CGO_ENABLED=0
-
-# .PHONY default:
-# default: build
-
-.PHONY build:
-build: # Build lambda function go binaries
-	@go build -o ./lambda/main ./lambda/main.go
+# GOOS=linux
+# GOARCH=amd64
+# CGO_ENABLED=0
 
 .PHONY deploy:
 deploy: build

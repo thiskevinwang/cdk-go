@@ -10,11 +10,11 @@ import (
 	"github.com/aws/jsii-runtime-go"
 )
 
-type CdkLambdaGoStackProps struct {
+type StackProps struct {
 	awscdk.StackProps
 }
 
-func NewCdkLambdaGoStack(scope constructs.Construct, id string, props *CdkLambdaGoStackProps) awscdk.Stack {
+func Stack(scope constructs.Construct, id string, props *StackProps) awscdk.Stack {
 	var sprops awscdk.StackProps
 	if props != nil {
 		sprops = props.StackProps
@@ -59,7 +59,7 @@ func main() {
 
 	stackId := "GolangStack"
 
-	NewCdkLambdaGoStack(app, stackId, &CdkLambdaGoStackProps{
+	Stack(app, stackId, &StackProps{
 		awscdk.StackProps{
 			Env: env(),
 		},

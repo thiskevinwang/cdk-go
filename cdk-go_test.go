@@ -9,12 +9,12 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func TestCdkLambdaGoStack(t *testing.T) {
+func TestStack(t *testing.T) {
 	// GIVEN
 	app := awscdk.NewApp(nil)
 
 	// WHEN
-	stack := NewCdkLambdaGoStack(app, "MyStack", nil)
+	stack := Stack(app, "MyStack", nil)
 
 	// THEN
 	bytes, err := json.Marshal(app.Synth(nil).GetStackArtifact(stack.ArtifactId()).Template())

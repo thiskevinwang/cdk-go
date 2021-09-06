@@ -1,4 +1,4 @@
-module cdk-lambda-go
+module cdk-go
 
 go 1.17
 
