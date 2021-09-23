@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"os/exec"
 	"runtime"
 
@@ -41,10 +42,19 @@ type Session struct {
 	Key   string `json:"sessionKey"`
 	Token string `json:"sessionToken"`
 }
+type TokenResponse struct {
+	SigninToken string `json:"SigninToken"`
+}
 
 func main() {
 	console_url := "https://console.aws.amazon.com/"
 	sign_in_url := "https://signin.aws.amazon.com/federation"
+
+	args := os.Args[1:]
+	name := "stranger_danger"
+	if len(args) >= 1 {
+		name = args[0]
+	}
 
 	ctx := context.TODO()
 	cfg, err := config.LoadDefaultConfig(ctx)
@@ -54,7 +64,7 @@ func main() {
 
 	client := sts.NewFromConfig(cfg)
 	creds, err := client.GetFederationToken(ctx, &sts.GetFederationTokenInput{
-		Name: aws.String("foobar"),
+		Name: aws.String(name),
 		PolicyArns: []types.PolicyDescriptorType{
 			types.PolicyDescriptorType{
 				Arn: aws.String("arn:aws:iam::aws:policy/AmazonSNSReadOnlyAccess"),
@@ -65,9 +75,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("AccessKeyId:", aws.ToString(creds.Credentials.AccessKeyId))
-	fmt.Println("SecretAccessKey:", aws.ToString(creds.Credentials.SecretAccessKey))
-	fmt.Println("SessionToken:", aws.ToString(creds.Credentials.SessionToken))
+	// fmt.Println("AccessKeyId:", aws.ToString(creds.Credentials.AccessKeyId))
+	// fmt.Println("SecretAccessKey:", aws.ToString(creds.Credentials.SecretAccessKey))
+	// fmt.Println("SessionToken:", aws.ToString(creds.Credentials.SessionToken))
 
 	baseUrl, err := url.Parse(sign_in_url)
 	if err != nil {
@@ -85,18 +95,17 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(string(b))
+	// fmt.Println(string(b))
 
 	params := url.Values{}
 	params.Add("Action", "getSigninToken")
-	// params.Add("SessionDuration", "43200")
-	params.Add("SessionType", "json")
-	params.Add("Session", url.QueryEscape(string(b)))
+	params.Add("SessionDuration", "43200")
+	params.Add("Session", string(b))
 
 	baseUrl.RawQuery = params.Encode()
 
 	uri := baseUrl.String()
-	fmt.Println(uri)
+	// fmt.Println(uri)
 
 	resp, err := http.Get(uri)
 	defer resp.Body.Close()
@@ -106,16 +115,28 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		bodyString := string(bodyBytes)
-		fmt.Println(bodyString)
 
-		_params := url.Values{}
-		_params.Add("Action", "login")
-		_params.Add("Issuer", "foobar")
-		_params.Add("Destination", console_url)
+		params := url.Values{}
+		params.Add("Action", "login")
+		params.Add("Issuer", "arbitrary_issuer")
+		params.Add("Destination", console_url)
 
-		uri := fmt.Sprintf("", sign_in_url)
-		openbrowser(uri)
+		data := TokenResponse{}
+		json.Unmarshal(bodyBytes, &data)
+		// fmt.Printf("SigninToken: %s", data.SigninToken)
+		params.Add("SigninToken", data.SigninToken)
+
+		baseUri, err := url.Parse(sign_in_url)
+		if err != nil {
+			fmt.Println("Malformed URL: ", err.Error())
+			return
+		}
+		baseUri.RawQuery = params.Encode()
+
+		console_uri := baseUri.String()
+		// fmt.Println(console_uri)
+		fmt.Println("Attempting to open AWS console...")
+		openbrowser(console_uri)
 	} else {
 		fmt.Println("Non 200 status code")
 	}
@@ -124,3 +145,16 @@ func main() {
 	}
 
 }
+
+// %7B = {
+// %22 = "
+// %3A = :
+
+// Example @ https://aws.amazon.com/blogs/security/enable-your-federated-users-to-work-in-the-aws-management-console-for-up-to-12-hours/
+
+// https://signin.aws.amazon.com/federation
+// ?Action=getSigninToken
+// &Session=%7B%22sessionId%22%3A%22ASIAEXAMPLEMD
+// LUUAEYQ%22%2C%22sessionKey%22%3A%22tpSl9thxr2PkEXAMPLETAnVLVGdwC5zXtGDr
+// %2FqWi%22%2C%22sessionToken%22%3A%22AQoDYXdz%EXAMPLE
+//&SessionDuration=43200
