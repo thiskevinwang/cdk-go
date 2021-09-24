@@ -47,7 +47,8 @@ type TokenResponse struct {
 }
 
 func main() {
-	console_url := "https://console.aws.amazon.com/"
+	region := "us-east-1"
+	console_url := "https://console.aws.amazon.com/billing/home?region=" + region
 	sign_in_url := "https://signin.aws.amazon.com/federation"
 
 	args := os.Args[1:]
@@ -65,9 +66,13 @@ func main() {
 	client := sts.NewFromConfig(cfg)
 	creds, err := client.GetFederationToken(ctx, &sts.GetFederationTokenInput{
 		Name: aws.String(name),
+
 		PolicyArns: []types.PolicyDescriptorType{
 			types.PolicyDescriptorType{
-				Arn: aws.String("arn:aws:iam::aws:policy/AmazonSNSReadOnlyAccess"),
+				Arn: aws.String("arn:aws:iam::aws:policy/ReadOnlyAccess"),
+			},
+			types.PolicyDescriptorType{
+				Arn: aws.String("arn:aws:iam::aws:policy/AWSBillingReadOnlyAccess"),
 			},
 		},
 	})
@@ -135,7 +140,7 @@ func main() {
 
 		console_uri := baseUri.String()
 		// fmt.Println(console_uri)
-		fmt.Println("Attempting to open AWS console...")
+		fmt.Printf("Attempting to open AWS console in %v...", region)
 		openbrowser(console_uri)
 	} else {
 		fmt.Println("Non 200 status code")
