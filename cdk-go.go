@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/aws/aws-cdk-go/awscdk"
 	"github.com/aws/aws-cdk-go/awscdk/awsdynamodb"
+	"github.com/aws/aws-cdk-go/awscdk/awseks"
 	"github.com/aws/aws-cdk-go/awscdk/awslambda"
 	"github.com/aws/aws-cdk-go/awscdk/awslambdago"
 	"github.com/aws/aws-cdk-go/awscdk/awssns"
@@ -14,22 +15,23 @@ type StackProps struct {
 	awscdk.StackProps
 }
 
+const baseName = "GoCDK"
+
 func Stack(scope constructs.Construct, id string, props *StackProps) awscdk.Stack {
 	var sprops awscdk.StackProps
 	if props != nil {
 		sprops = props.StackProps
 	}
 	stack := awscdk.NewStack(scope, &id, &sprops)
+	stack.StackId()
 
 	// The code that defines your stack goes here
 
 	// as an example, here's how you would define an AWS SNS topic:
-	awssns.NewTopic(stack, jsii.String("MyTopic"), &awssns.TopicProps{
-		DisplayName: jsii.String("MyCoolTopic"),
-	})
+	awssns.NewTopic(stack, jsii.String(baseName+"SnsTopic"), &awssns.TopicProps{})
 
 	// Adding a basic Dynamo DB table
-	table := awsdynamodb.NewTable(stack, jsii.String("GoCDKTable"), &awsdynamodb.TableProps{
+	table := awsdynamodb.NewTable(stack, jsii.String(baseName+"DynamoTable"), &awsdynamodb.TableProps{
 		PartitionKey: &awsdynamodb.Attribute{
 			Name: jsii.String("pk"),
 			Type: awsdynamodb.AttributeType_STRING,
@@ -41,7 +43,7 @@ func Stack(scope constructs.Construct, id string, props *StackProps) awscdk.Stac
 		BillingMode: awsdynamodb.BillingMode_PAY_PER_REQUEST,
 	})
 
-	fn := awslambdago.NewGoFunction(stack, jsii.String("MyGoFunction3"), &awslambdago.GoFunctionProps{
+	fn := awslambdago.NewGoFunction(stack, jsii.String(baseName+"Lambda"), &awslambdago.GoFunctionProps{
 		Description: jsii.String("A lambda function, written in Go"),
 		Runtime:     awslambda.Runtime_GO_1_X(),
 		Entry:       jsii.String("lambda/main.go"),
@@ -49,6 +51,10 @@ func Stack(scope constructs.Construct, id string, props *StackProps) awscdk.Stac
 	})
 
 	table.GrantReadWriteData(fn)
+
+	awseks.NewFargateCluster(stack, jsii.String(baseName+"FargateCluster"), &awseks.FargateClusterProps{
+		Version: awseks.KubernetesVersion_V1_21(),
+	})
 
 	return stack
 }
