@@ -89,6 +89,8 @@ github.com/aws/aws-sdk-go-v2/service/sts v1.7.0/go.mod h1:0qcSMCyASQPN2sk/1KQLQ2
 github.com/aws/constructs-go/constructs/v3 v3.3.99/go.mod h1:57EORSZf5SjfvfA3S2AqWohq77hzeJ5UzDY851iE12o=
 github.com/aws/constructs-go/constructs/v3 v3.3.150 h1:AqLZX+1xITn4ml0DBLHSf053rnPolBA+s65/O+/DfU4=
 github.com/aws/constructs-go/constructs/v3 v3.3.150/go.mod h1:EdHdie7l6syQGK8IAQGn3reRVI/HC+NxT6jtL7KOfqA=
+github.com/aws/constructs-go/constructs/v3 v3.3.154 h1:KTTk4jRz78QWOPtLrJ1iGck2QMbkI3IDc+XIt1rvUEE=
+github.com/aws/constructs-go/constructs/v3 v3.3.154/go.mod h1:EdHdie7l6syQGK8IAQGn3reRVI/HC+NxT6jtL7KOfqA=
 github.com/aws/jsii-runtime-go v1.31.0/go.mod h1:6tZnlstx8bAB3vnLFF9n8bbkI//LDblAek9zFyMXV3E=
 github.com/aws/jsii-runtime-go v1.34.0 h1:Qsb3uG1iWR/10b9t/2ECbPkJEP/Y+7p9Fq2tfRtSNoc=
 github.com/aws/jsii-runtime-go v1.34.0/go.mod h1:6tZnlstx8bAB3vnLFF9n8bbkI//LDblAek9zFyMXV3E=
