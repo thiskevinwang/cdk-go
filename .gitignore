@@ -18,3 +18,5 @@
 .cdk.staging
 cdk.out
 .env
+
+notes.md
